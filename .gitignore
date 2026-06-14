@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+
+node_modules/
+.next/
+out/
+
+.env
+.env.local
+.env.*.local
+
+appsettings.Development.json
