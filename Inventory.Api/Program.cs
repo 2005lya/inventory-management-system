@@ -39,7 +39,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowInventoryWeb", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins(   
+                "http://localhost:3000", 
+                "https://localhost:3001"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -100,11 +103,10 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 

@@ -6,7 +6,7 @@ public static class DbSeeder
 {
     public static async Task SeedAsync(AppDbContext context)
     {
-        if (!context.Users.Any())
+        if (!context.Users.Any(u => u.Email == "admin@test.com"))
         {
             context.Users.Add(new AppUser
             {
