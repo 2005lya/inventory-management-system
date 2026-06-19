@@ -41,7 +41,7 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(   
                 "http://localhost:3000", 
-                "https://localhost:3001"
+                "https://ims-web-one.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();

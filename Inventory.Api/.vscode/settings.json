@@ -1,0 +1,5 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin/Release/net8.0/publish",
+    "appService.defaultWebAppToDeploy": "/subscriptions/faf3ef95-553f-4538-b0e3-69a398f74ae5/resourceGroups/rg-ims-prod/providers/Microsoft.Web/sites/ims-api-stephan"
+}
