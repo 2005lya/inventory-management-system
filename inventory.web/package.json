@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.14.0",
+    "@azure/msal-react": "^5.4.5",
     "jwt-decode": "^4.0.0",
     "next": "15.5.19",
     "react": "19.1.0",

@@ -33,6 +33,13 @@ export async function getDashboardData() {
     !suppliersRes.ok ||
     !lowStockRes.ok
   ) {
+    console.error({
+      productsStatus: productsRes.status,
+      categoriesStatus: categoriesRes.status,
+      suppliersStatus: suppliersRes.status,
+      lowStockStatus: lowStockRes.status,
+    });
+
     throw new Error("Failed to fetch dashboard data");
   }
 
@@ -41,8 +48,12 @@ export async function getDashboardData() {
   const suppliers = (await suppliersRes.json()) as Supplier[];
   const lowStockProducts = (await lowStockRes.json()) as Product[];
 
+  const products = Array.isArray(productsData)
+    ? productsData
+    : productsData.items ?? productsData.data ?? [];
+
   return {
-    totalProducts: productsData.totalCount,
+    totalProducts: productsData.totalCount ?? products.length,
     totalCategories: categories.length,
     totalSuppliers: suppliers.length,
     lowStockCount: lowStockProducts.length,

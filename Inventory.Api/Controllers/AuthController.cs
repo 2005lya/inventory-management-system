@@ -43,4 +43,20 @@ public class AuthController : ControllerBase
             token
         });
     }
+
+    [HttpPost("microsoft-login")]
+public async Task<IActionResult> MicrosoftLogin(MicrosoftLoginDto dto)
+{
+    var token = await _authService.MicrosoftLoginAsync(dto);
+
+    if (token == null)
+    {
+        return Unauthorized("Invalid Microsoft token");
+    }
+
+    return Ok(new
+    {
+        token
+    });
+}
 }

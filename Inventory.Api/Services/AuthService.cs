@@ -89,6 +89,64 @@ public class AuthService : IAuthService
         return GenerateJwtToken(user);
     }
 
+    public async Task<string?> MicrosoftLoginAsync(MicrosoftLoginDto dto)
+{
+    var handler = new JwtSecurityTokenHandler();
+
+    if (!handler.CanReadToken(dto.AccessToken))
+    {
+        _logger.LogWarning("Microsoft login failed. Invalid token format.");
+        return null;
+    }
+
+    var token = handler.ReadJwtToken(dto.AccessToken);
+
+    var issuer = token.Issuer;
+
+    if (!issuer.StartsWith("https://login.microsoftonline.com/"))
+    {
+        _logger.LogWarning("Microsoft login failed. Invalid issuer: {Issuer}", issuer);
+        return null;
+    }
+
+    var email =
+        token.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value
+        ?? token.Claims.FirstOrDefault(c => c.Type == "email")?.Value
+        ?? token.Claims.FirstOrDefault(c => c.Type == "upn")?.Value;
+
+    if (string.IsNullOrWhiteSpace(email))
+    {
+        _logger.LogWarning("Microsoft login failed. Email claim not found.");
+        return null;
+    }
+
+    var user = await _context.Users
+        .FirstOrDefaultAsync(u => u.Email == email);
+
+    if (user == null)
+    {
+        user = new AppUser
+        {
+            Email = email,
+            PasswordHash = string.Empty,
+            Role = "Admin"
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Microsoft user {Email} created successfully.",
+            email);
+    }
+
+    _logger.LogInformation(
+        "Microsoft user {Email} logged in successfully.",
+        email);
+
+    return GenerateJwtToken(user);
+}
+
     private string GenerateJwtToken(AppUser user)
     {
         var claims = new[]
