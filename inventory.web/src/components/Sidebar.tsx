@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 export default function Sidebar() {
   const router = useRouter();
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    router.replace("/login");
-  }
+  async function handleLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("microsoftAccessToken");
+
+  router.replace("/login");
+}
 
   return (
     <aside className="w-64 min-h-screen border-r bg-white">

@@ -1,12 +1,65 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { login } from "@/lib/api";
+import { loginRequest, msalInstance } from "@/lib/msalConfig";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("admin@test.com");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
+  const [microsoftLoading, setMicrosoftLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+  async function handleMicrosoftRedirect() {
+    try {
+      await msalInstance.initialize();
+
+      const result = await msalInstance.handleRedirectPromise();
+      console.log("Redirect result:", result);
+
+     if (!result) {
+  console.log("No redirect result");
+  return;
+}
+
+console.log("Access token:", result.accessToken);
+console.log("ID token:", result.idToken);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/microsoft-login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accessToken: result.accessToken,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Microsoft login failed");
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem("token", data.token);
+      router.replace("/dashboard");
+    } catch (error) {
+      console.error(error);
+      setError("Microsoft login failed");
+    }
+  }
+
+  handleMicrosoftRedirect();
+}, [router]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -22,6 +75,22 @@ export default function LoginPage() {
       setError("Invalid email or password");
     }
   }
+
+  async function handleMicrosoftLogin() {
+  if (microsoftLoading) return;
+
+  setMicrosoftLoading(true);
+  setError("");
+
+  try {
+    await msalInstance.initialize();
+    await msalInstance.loginRedirect(loginRequest);
+  } catch (error) {
+    console.error(error);
+    setError("Microsoft login failed");
+    setMicrosoftLoading(false);
+  }
+}
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -55,6 +124,15 @@ export default function LoginPage() {
         <button className="w-full rounded bg-black px-4 py-2 text-white">
           Login
         </button>
+
+       <button
+  type="button"
+  onClick={handleMicrosoftLogin}
+  disabled={microsoftLoading}
+  className="w-full rounded border px-4 py-2"
+>
+  {microsoftLoading ? "Signing in..." : "Sign in with Microsoft"}
+</button>
       </form>
     </main>
   );

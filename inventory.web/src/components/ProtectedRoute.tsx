@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 export default function ProtectedRoute({
   children,
 }: {
@@ -13,8 +14,10 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+        const microsoftToken = localStorage.getItem("microsoftAccessToken");
 
-    if (!token) {
+
+    if (!token && !microsoftToken) {
       router.replace("/login");
       return;
     }
