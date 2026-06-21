@@ -7,7 +7,7 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     const microsoftToken = localStorage.getItem("microsoftAccessToken");
 
     if (token || microsoftToken) {

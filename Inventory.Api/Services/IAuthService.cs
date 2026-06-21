@@ -6,6 +6,10 @@ public interface IAuthService
 {
     Task<bool> RegisterAsync(RegisterDto dto);
 
-    Task<string?> LoginAsync(LoginDto dto);
-    Task<string?> MicrosoftLoginAsync(MicrosoftLoginDto dto);
+    Task<AuthResponseDto?> LoginAsync(LoginDto dto);
+
+    Task<AuthResponseDto?> MicrosoftLoginAsync(MicrosoftLoginDto dto);
+
+    Task<AuthResponseDto?> RefreshTokenAsync(RefreshTokenDto dto);
+
 }

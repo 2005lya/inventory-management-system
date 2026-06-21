@@ -29,34 +29,41 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto dto)
+public async Task<IActionResult> Login(LoginDto dto)
+{
+    var result = await _authService.LoginAsync(dto);
+
+    if (result == null)
     {
-        var token = await _authService.LoginAsync(dto);
-
-        if (token == null)
-        {
-            return Unauthorized("Invalid email or password");
-        }
-
-        return Ok(new
-        {
-            token
-        });
+        return Unauthorized("Invalid email or password");
     }
 
-    [HttpPost("microsoft-login")]
+    return Ok(result);
+}
+
+  [HttpPost("microsoft-login")]
 public async Task<IActionResult> MicrosoftLogin(MicrosoftLoginDto dto)
 {
-    var token = await _authService.MicrosoftLoginAsync(dto);
+    var result = await _authService.MicrosoftLoginAsync(dto);
 
-    if (token == null)
+    if (result == null)
     {
         return Unauthorized("Invalid Microsoft token");
     }
 
-    return Ok(new
+    return Ok(result);
+}
+
+[HttpPost("refresh-token")]
+public async Task<IActionResult> RefreshToken(RefreshTokenDto dto)
+{
+    var result = await _authService.RefreshTokenAsync(dto);
+
+    if (result == null)
     {
-        token
-    });
+        return Unauthorized("Invalid refresh token");
+    }
+
+    return Ok(result);
 }
 }

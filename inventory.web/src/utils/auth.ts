@@ -6,7 +6,7 @@ type JwtPayload = {
 };
 
 export function getUserRole() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   if (!token) return null;
 

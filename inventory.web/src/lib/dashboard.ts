@@ -1,30 +1,19 @@
 import { Product } from "@/types/product";
 import { Category } from "@/types/category";
 import { Supplier } from "@/types/supplier";
+import { apiFetch } from "./api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-function getToken() {
-  return localStorage.getItem("token");
-}
-
 export async function getDashboardData() {
-  const token = getToken();
+  
 
   const [productsRes, categoriesRes, suppliersRes, lowStockRes] =
     await Promise.all([
-      fetch(`${API_BASE_URL}/api/Products?page=1&pageSize=1000`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE_URL}/api/Categories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE_URL}/api/Suppliers`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE_URL}/api/Reports/low-stock`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
+      apiFetch(`${API_BASE_URL}/api/Products?page=1&pageSize=1000`),
+      apiFetch(`${API_BASE_URL}/api/Categories`),
+      apiFetch(`${API_BASE_URL}/api/Suppliers`),
+      apiFetch(`${API_BASE_URL}/api/Reports/low-stock`),
     ]);
 
   if (

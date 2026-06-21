@@ -29,7 +29,7 @@ export default function ReportsPage() {
   useEffect(() => {
     async function loadLowStockProducts() {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("accessToken");
 
         const response = await fetch(`${API_BASE_URL}/api/Reports/low-stock`, {
           headers: getAuthHeaders(),
