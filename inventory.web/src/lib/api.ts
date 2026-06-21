@@ -56,7 +56,7 @@ export async function apiFetch(
   url: string,
   options: RequestInit = {}
 ) {
-  let accessToken =
+  const accessToken =
     localStorage.getItem("accessToken");
 
   let response = await fetch(url, {
