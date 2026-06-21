@@ -22,10 +22,10 @@ steps:
 - script: dotnet restore $(backendProject)
   displayName: Restore Backend
 
-- script: dotnet build $(backendProject) --configuration Release --no-restore
+- script: dotnet build Inventory.Api/Inventory.Api.csproj --configuration Release --no-restore
   displayName: Build Backend
 
-- script: dotnet publish $(backendProject) --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/backend
+- script: dotnet publish Inventory.Api/Inventory.Api.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)/backend
   displayName: Publish Backend
 
 # Install Node.js
