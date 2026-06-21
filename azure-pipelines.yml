@@ -29,7 +29,7 @@ steps:
     versionSpec: '20.x'
 
 # Build Frontend
-- script: npm ci
+- script: npm install
   workingDirectory: $(frontendPath)
   displayName: Install Frontend Packages
 
