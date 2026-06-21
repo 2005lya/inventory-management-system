@@ -2,12 +2,12 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: UseDotNet@2
   inputs:
-    packageType: sdk
+    packageType: 'sdk'
     version: '8.0.x'
 
 - script: dotnet restore
