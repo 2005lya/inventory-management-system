@@ -4,14 +4,18 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+
+variables:
+  backendProject: 'Inventory.Api/Inventory.Api.csproj'
+
 steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
 
-- script: dotnet restore
-  displayName: Restore Packages
+- script: dotnet restore $(backendProject)
+  displayName: Restore Backend
 
-- script: dotnet build --configuration Release
-  displayName: Build Solution
+- script: dotnet build $(backendProject) --configuration Release --no-restore
+  displayName: Build Backend
