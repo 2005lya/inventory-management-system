@@ -7,6 +7,8 @@ pool:
 variables:
   backendProject: 'Inventory.Api/Inventory.Api.csproj'
   frontendPath: 'inventory.web'
+  azureSubscription: 'IMS-Azure-Connection'
+  webAppName: 'ims-api-stephan'
 
 steps:
 
@@ -22,6 +24,9 @@ steps:
 
 - script: dotnet build $(backendProject) --configuration Release --no-restore
   displayName: Build Backend
+
+- script: dotnet publish $(backendProject) --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/backend
+  displayName: Publish Backend
 
 # Install Node.js
 - task: UseNode@1
@@ -39,3 +44,11 @@ steps:
 - script: npm run build
   workingDirectory: $(frontendPath)
   displayName: Build Frontend
+
+- task: AzureWebApp@1
+  displayName: Deploy Backend to Azure App Service
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appType: 'webApp'
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/backend'
