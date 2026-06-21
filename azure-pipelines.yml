@@ -4,18 +4,35 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-
 variables:
   backendProject: 'Inventory.Api/Inventory.Api.csproj'
+  frontendPath: 'Inventory.Web'
 
 steps:
+
+# Install .NET 8
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
 
+# Build Backend
 - script: dotnet restore $(backendProject)
   displayName: Restore Backend
 
 - script: dotnet build $(backendProject) --configuration Release --no-restore
   displayName: Build Backend
+
+# Install Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+
+# Build Frontend
+- script: npm install
+  workingDirectory: $(frontendPath)
+  displayName: Install Frontend Packages
+
+- script: npm run build
+  workingDirectory: $(frontendPath)
+  displayName: Build Frontend
