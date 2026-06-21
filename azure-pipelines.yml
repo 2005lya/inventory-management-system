@@ -24,12 +24,12 @@ steps:
   displayName: Build Backend
 
 # Install Node.js
-- task: NodeTool@0
+- task: NodeTool@1
   inputs:
     versionSpec: '20.x'
 
 # Build Frontend
-- script: npm install
+- script: npm ci
   workingDirectory: $(frontendPath)
   displayName: Install Frontend Packages
 
