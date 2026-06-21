@@ -9,6 +9,7 @@ export default function Sidebar() {
   async function handleLogout() {
   localStorage.removeItem("token");
   localStorage.removeItem("microsoftAccessToken");
+  sessionStorage.clear();
 
   router.replace("/login");
 }
