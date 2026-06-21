@@ -6,7 +6,7 @@ pool:
 
 variables:
   backendProject: 'Inventory.Api/Inventory.Api.csproj'
-  frontendPath: 'Inventory.Web'
+  frontendPath: 'inventory.web'
 
 steps:
 
