@@ -19,4 +19,5 @@ public class AppDbContext : DbContext
     public DbSet<Supplier> Suppliers => Set<Supplier>();
 
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 }

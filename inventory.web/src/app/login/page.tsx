@@ -28,8 +28,6 @@ export default function LoginPage() {
   return;
 }
 
-console.log("Access token:", result.accessToken);
-console.log("ID token:", result.idToken);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/microsoft-login`,
@@ -50,7 +48,7 @@ console.log("ID token:", result.idToken);
 
       const data = await response.json();
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.accessToken);
       router.replace("/dashboard");
     } catch (error) {
       console.error(error);
@@ -68,7 +66,8 @@ console.log("ID token:", result.idToken);
     try {
       const result = await login(email, password);
 
-      localStorage.setItem("token", result.token);
+      localStorage.setItem("accessToken", result.accessToken);
+localStorage.setItem("refreshToken", result.refreshToken);
 
       window.location.href = "/dashboard";
     } catch {

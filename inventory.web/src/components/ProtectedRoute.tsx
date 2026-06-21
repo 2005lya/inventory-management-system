@@ -13,7 +13,7 @@ export default function ProtectedRoute({
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
         const microsoftToken = localStorage.getItem("microsoftAccessToken");
 
 

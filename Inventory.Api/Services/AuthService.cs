@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace Inventory.Api.Services;
 
@@ -56,8 +57,8 @@ public class AuthService : IAuthService
         return true;
     }
 
-    public async Task<string?> LoginAsync(LoginDto dto)
-    {
+    public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
+{
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null)
@@ -73,23 +74,68 @@ public class AuthService : IAuthService
             user.PasswordHash
         );
 
-        if (!validPassword)
-        {
-            _logger.LogWarning(
-                "Login failed. Invalid password for {Email}.",
-                dto.Email);
+        var accessToken = GenerateJwtToken(user);
+    var refreshToken = GenerateRefreshToken();
 
-            return null;
-        }
+    _context.RefreshTokens.Add(new RefreshToken
+    {
+        Token = refreshToken,
+        AppUserId = user.Id,
+        ExpiresAt = DateTime.UtcNow.AddDays(30)
+    });
 
-        _logger.LogInformation(
-    "User {Email} logged in successfully.",
-    dto.Email);
+    await _context.SaveChangesAsync();
 
-        return GenerateJwtToken(user);
+    return new AuthResponseDto
+    {
+        AccessToken = accessToken,
+        RefreshToken = refreshToken
+    };
     }
 
-    public async Task<string?> MicrosoftLoginAsync(MicrosoftLoginDto dto)
+    public async Task<AuthResponseDto?> RefreshTokenAsync(RefreshTokenDto dto)
+{
+    var storedToken = await _context.RefreshTokens
+        .Include(r => r.AppUser)
+        .FirstOrDefaultAsync(r => r.Token == dto.RefreshToken);
+
+    if (storedToken == null)
+    {
+        return null;
+    }
+
+    if (storedToken.IsRevoked)
+    {
+        return null;
+    }
+
+    if (storedToken.ExpiresAt < DateTime.UtcNow)
+    {
+        return null;
+    }
+
+    storedToken.IsRevoked = true;
+
+    var newAccessToken = GenerateJwtToken(storedToken.AppUser);
+    var newRefreshToken = GenerateRefreshToken();
+
+    _context.RefreshTokens.Add(new RefreshToken
+    {
+        Token = newRefreshToken,
+        AppUserId = storedToken.AppUser.Id,
+        ExpiresAt = DateTime.UtcNow.AddDays(30)
+    });
+
+    await _context.SaveChangesAsync();
+
+    return new AuthResponseDto
+    {
+        AccessToken = newAccessToken,
+        RefreshToken = newRefreshToken
+    };
+}
+
+    public async Task<AuthResponseDto?> MicrosoftLoginAsync(MicrosoftLoginDto dto)
 {
     var handler = new JwtSecurityTokenHandler();
 
@@ -144,7 +190,23 @@ public class AuthService : IAuthService
         "Microsoft user {Email} logged in successfully.",
         email);
 
-    return GenerateJwtToken(user);
+    var accessToken = GenerateJwtToken(user);
+var refreshToken = GenerateRefreshToken();
+
+_context.RefreshTokens.Add(new RefreshToken
+{
+    Token = refreshToken,
+    AppUserId = user.Id,
+    ExpiresAt = DateTime.UtcNow.AddDays(30)
+});
+
+await _context.SaveChangesAsync();
+
+return new AuthResponseDto
+{
+    AccessToken = accessToken,
+    RefreshToken = refreshToken
+};
 }
 
     private string GenerateJwtToken(AppUser user)
@@ -176,4 +238,15 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler()
             .WriteToken(token);
     }
+
+    private string GenerateRefreshToken()
+{
+    var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+    return Convert.ToBase64String(randomBytes);
 }
+
+
+
+}
+
