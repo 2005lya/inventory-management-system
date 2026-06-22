@@ -1,76 +1,45 @@
 # Inventory Management System (IMS)
 
-A full-stack Inventory Management System built with ASP.NET Core 8, Entity Framework Core, SQL Server, JWT Authentication, Role-Based Authorization, and Next.js.
+A full-stack Inventory Management System built with ASP.NET Core 8, Next.js, Azure SQL, and Azure App Service.
 
-This project demonstrates enterprise-level application architecture including authentication, authorization, layered architecture, reporting, inventory tracking, and modern frontend development.
+The project demonstrates enterprise-level software development practices including JWT authentication, refresh token rotation, Microsoft OpenID Connect authentication, Azure cloud deployment, and Azure DevOps CI/CD pipelines.
 
 ---
 
 ## Features
 
-### Authentication & Authorization
+### Authentication & Security
 
 * User Registration
 * User Login
 * JWT Authentication
-* Protected API Endpoints
+* Refresh Token Rotation
+* Microsoft OpenID Connect Login
 * Role-Based Authorization (Admin/User)
-
-### Product Management
-
-* Create Product
-* Edit Product
-* Delete Product
-* View Product Details
-* Product Search
-* Pagination
-* Category Filtering
-* Supplier Filtering
-
-### Category Management
-
-* Create Category
-* Edit Category
-* Delete Category
-* View Categories
-
-### Supplier Management
-
-* Create Supplier
-* Edit Supplier
-* Delete Supplier
-* View Suppliers
 
 ### Inventory Management
 
-* Stock In
-* Stock Out
-* Automatic Quantity Updates
-* Stock Movement Tracking
+* Product Management
+* Category Management
+* Supplier Management
+* Inventory Tracking
+* Low Stock Monitoring
 
-### Reporting
+### Dashboard & Reporting
 
+* Dashboard Analytics
+* Product Count
+* Category Count
+* Supplier Count
 * Low Stock Report
-* Stock Movement History
 
-### Dashboard
+### Cloud & DevOps
 
-* Total Products
-* Total Categories
-* Total Suppliers
-* Low Stock Products
-
-### System Features
-
-* DTO Pattern
-* Repository Pattern
-* Service Layer
-* AutoMapper
-* Validation
-* Global Exception Handling
-* Logging
-* SQL Server Database
-* Docker Support
+* Azure SQL Database
+* Azure App Service Deployment
+* Azure DevOps CI/CD Pipeline
+* Automated Build Validation
+* Automated Backend Deployment
 
 ---
 
@@ -79,278 +48,131 @@ This project demonstrates enterprise-level application architecture including au
 ### Backend
 
 * ASP.NET Core 8 Web API
-* Entity Framework Core 8
-* SQL Server 2022
-* JWT Authentication
+* Entity Framework Core
+* SQL Server / Azure SQL
 * AutoMapper
-* Fluent Architecture
+* JWT Authentication
+* BCrypt Password Hashing
 * Repository Pattern
-* Service Layer
+* Service Layer Pattern
 
 ### Frontend
 
 * Next.js 15
-* React
+* React 19
 * TypeScript
 * Tailwind CSS
-* App Router
-* React Hot Toast
+* MSAL (Microsoft Authentication Library)
 
-### Infrastructure
+### Cloud
 
-* Docker
-* SQL Server Container
+* Azure App Service
+* Azure SQL Database
+* Microsoft Entra ID (Azure AD)
+
+### DevOps
+
+* GitHub
+* Azure DevOps
+* YAML Pipelines
 
 ---
 
 ## Architecture
 
-```text
+The application follows a layered architecture:
+
 Controller
-    ↓
-Service Layer
-    ↓
-Repository Layer
-    ↓
-Entity Framework Core
-    ↓
-SQL Server
-```
+→ Service
+→ Repository
+→ Entity Framework Core
+→ Azure SQL Database
+
+Key design patterns:
+
+* Repository Pattern
+* Service Layer Pattern
+* DTO Pattern
+* Dependency Injection
+* AutoMapper
 
 ---
 
-## Database Schema
+## Authentication Flow
 
-### AppUser
+### Traditional Login
 
-```text
-Id
-Email
-PasswordHash
-Role
-```
+Email + Password
+↓
+Auth Service
+↓
+JWT Access Token
+↓
+Refresh Token
+↓
+Protected APIs
 
-### Category
+### Microsoft Login
 
-```text
-Id
-Name
-```
-
-### Supplier
-
-```text
-Id
-Name
-ContactPerson
-Email
-```
-
-### Product
-
-```text
-Id
-Sku
-Name
-Quantity
-LowStockThreshold
-CategoryId
-SupplierId
-```
-
-### StockMovement
-
-```text
-Id
-ProductId
-Quantity
-MovementType
-CreatedAt
-```
+Microsoft Entra ID
+↓
+Microsoft Access Token
+↓
+IMS User Mapping
+↓
+IMS JWT Token
+↓
+Protected APIs
 
 ---
 
-## Role-Based Authorization
+## CI/CD Pipeline
 
-### Admin
-
-Can:
-
-* Create Products
-* Edit Products
-* Delete Products
-* Create Categories
-* Edit Categories
-* Delete Categories
-* Create Suppliers
-* Edit Suppliers
-* Delete Suppliers
-* Perform Stock In
-* Perform Stock Out
-* View Reports
-
-### User
-
-Can:
-
-* View Products
-* View Categories
-* View Suppliers
-* View Reports
-
-Cannot:
-
-* Create Records
-* Edit Records
-* Delete Records
-* Manage Inventory
+GitHub
+↓
+Azure DevOps Pipeline
+↓
+Restore Packages
+↓
+Build Backend
+↓
+Build Frontend
+↓
+Publish Backend
+↓
+Deploy Azure App Service
 
 ---
 
-## API Endpoints
+## Deployment
 
-### Authentication
+### Backend
 
-```http
-POST /api/Auth/register
-POST /api/Auth/login
-```
+Azure App Service
 
-### Products
+### Database
 
-```http
-GET    /api/Products
-GET    /api/Products/{id}
+Azure SQL Database
 
-POST   /api/Products
-PUT    /api/Products/{id}
-DELETE /api/Products/{id}
-```
+### Frontend
 
-### Categories
-
-```http
-GET    /api/Categories
-POST   /api/Categories
-PUT    /api/Categories/{id}
-DELETE /api/Categories/{id}
-```
-
-### Suppliers
-
-```http
-GET    /api/Suppliers
-POST   /api/Suppliers
-PUT    /api/Suppliers/{id}
-DELETE /api/Suppliers/{id}
-```
-
-### Inventory
-
-```http
-POST /api/Stock/in
-POST /api/Stock/out
-```
-
-### Reports
-
-```http
-GET /api/Reports/low-stock
-GET /api/Reports/stock-movements
-```
+Vercel
 
 ---
 
-## Running the Project
+## Future Improvements
 
-### Clone Repository
-
-```bash
-git clone https://github.com/yourusername/inventory-management-system.git
-```
-
-### Start SQL Server Docker Container
-
-```bash
-docker compose up -d
-```
-
-### Run Backend
-
-```bash
-cd Inventory.Api
-
-dotnet restore
-dotnet ef database update
-dotnet run
-```
-
-Backend runs on:
-
-```text
-https://localhost:5087
-```
-
-### Run Frontend
-
-```bash
-cd inventory-web
-
-npm install
-npm run dev
-```
-
-Frontend runs on:
-
-```text
-http://localhost:3000
-```
-
----
-
-## Default Admin Account
-
-```text
-Email:
-admin@test.com
-
-Password:
-123456
-```
-
----
-
-## Future Enhancements
-
-* Recent Stock Movements Dashboard Widget
-* Product Images
-* Export to Excel
-* Audit Logs
-* Advanced Reporting
-* Email Notifications
-* Azure Deployment
-* CI/CD Pipeline
-* Unit Testing
+* Unit Testing with xUnit
+* Clean Architecture
+* Docker Containerization
+* Redis Caching
+* CQRS & MediatR
 * Integration Testing
 
 ---
 
-## Learning Outcomes
+## Author
 
-This project demonstrates practical experience with:
+Stephan Xi
 
-* ASP.NET Core Web API
-* Entity Framework Core
-* SQL Server
-* JWT Authentication
-* Role-Based Authorization
-* RESTful API Design
-* Repository Pattern
-* Service Layer Architecture
-* Next.js Full Stack Development
-* Docker
-* TypeScript
-* Modern Frontend Development
-
-
-
+Software Developer | .NET | React | Azure
