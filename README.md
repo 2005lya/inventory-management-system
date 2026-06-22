@@ -96,6 +96,27 @@ Key design patterns:
 * Dependency Injection
 * AutoMapper
 
+## Architecture Diagram
+
+```mermaid
+flowchart TD
+    User[User] --> Frontend[Next.js Frontend<br/>Vercel]
+
+    Frontend -->|HTTPS API Calls<br/>Bearer Access Token| Backend[ASP.NET Core 8 Web API<br/>Azure App Service]
+
+    Backend -->|EF Core| Database[(Azure SQL Database)]
+
+    Frontend -->|Microsoft Login| Entra[Microsoft Entra ID]
+    Entra -->|Microsoft Token| Backend
+
+    Backend -->|Issues| AccessToken[JWT Access Token]
+    Backend -->|Issues| RefreshToken[Refresh Token]
+
+    GitHub[GitHub Repository] --> Pipeline[Azure DevOps Pipeline]
+    Pipeline -->|Build Backend| BackendBuild[.NET Build]
+    Pipeline -->|Build Frontend| FrontendBuild[Next.js Build]
+    Pipeline -->|Publish & Deploy| Backend
+
 ---
 
 ## Authentication Flow
