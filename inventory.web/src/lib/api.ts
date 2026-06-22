@@ -22,6 +22,25 @@ export async function login(email: string, password: string) {
   }>;
 }
 
+export async function register(email: string, password: string) {
+  const response = await fetch(`${API_BASE_URL}/api/Auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Registration failed");
+  }
+
+  return response.text();
+}
+
 export async function refreshToken() {
   const token = localStorage.getItem("refreshToken");
 

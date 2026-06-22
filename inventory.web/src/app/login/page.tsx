@@ -5,6 +5,7 @@ import { login } from "@/lib/api";
 import { loginRequest, msalInstance } from "@/lib/msalConfig";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 
@@ -16,48 +17,48 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-  async function handleMicrosoftRedirect() {
-    try {
-      await msalInstance.initialize();
+    async function handleMicrosoftRedirect() {
+      try {
+        await msalInstance.initialize();
 
-      const result = await msalInstance.handleRedirectPromise();
-      console.log("Redirect result:", result);
+        const result = await msalInstance.handleRedirectPromise();
+        console.log("Redirect result:", result);
 
-     if (!result) {
-  console.log("No redirect result");
-  return;
-}
-
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/microsoft-login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            accessToken: result.accessToken,
-          }),
+        if (!result) {
+          console.log("No redirect result");
+          return;
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Microsoft login failed");
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/microsoft-login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              accessToken: result.accessToken,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Microsoft login failed");
+        }
+
+        const data = await response.json();
+
+        localStorage.setItem("token", data.accessToken);
+        router.replace("/dashboard");
+      } catch (error) {
+        console.error(error);
+        setError("Microsoft login failed");
       }
-
-      const data = await response.json();
-
-      localStorage.setItem("token", data.accessToken);
-      router.replace("/dashboard");
-    } catch (error) {
-      console.error(error);
-      setError("Microsoft login failed");
     }
-  }
 
-  handleMicrosoftRedirect();
-}, [router]);
+    handleMicrosoftRedirect();
+  }, [router]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -67,7 +68,7 @@ export default function LoginPage() {
       const result = await login(email, password);
 
       localStorage.setItem("accessToken", result.accessToken);
-localStorage.setItem("refreshToken", result.refreshToken);
+      localStorage.setItem("refreshToken", result.refreshToken);
 
       window.location.href = "/dashboard";
     } catch {
@@ -76,20 +77,20 @@ localStorage.setItem("refreshToken", result.refreshToken);
   }
 
   async function handleMicrosoftLogin() {
-  if (microsoftLoading) return;
+    if (microsoftLoading) return;
 
-  setMicrosoftLoading(true);
-  setError("");
+    setMicrosoftLoading(true);
+    setError("");
 
-  try {
-    await msalInstance.initialize();
-    await msalInstance.loginRedirect(loginRequest);
-  } catch (error) {
-    console.error(error);
-    setError("Microsoft login failed");
-    setMicrosoftLoading(false);
+    try {
+      await msalInstance.initialize();
+      await msalInstance.loginRedirect(loginRequest);
+    } catch (error) {
+      console.error(error);
+      setError("Microsoft login failed");
+      setMicrosoftLoading(false);
+    }
   }
-}
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -120,18 +121,25 @@ localStorage.setItem("refreshToken", result.refreshToken);
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full rounded bg-black px-4 py-2 text-white">
+        <button className="w-full rounded bg-black px-4 py-2 text-white mb-4">
           Login
         </button>
 
-       <button
-  type="button"
-  onClick={handleMicrosoftLogin}
-  disabled={microsoftLoading}
-  className="w-full rounded border px-4 py-2"
->
-  {microsoftLoading ? "Signing in..." : "Sign in with Microsoft"}
-</button>
+        <button
+          type="button"
+          onClick={handleMicrosoftLogin}
+          disabled={microsoftLoading}
+          className="w-full rounded border px-4 py-2 mb-2"
+        >
+          {microsoftLoading ? "Signing in..." : "Sign in with Microsoft"}
+        </button>
+
+        <p className="mt-4 text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-blue-600 hover:underline">
+            Register
+          </Link>
+        </p>
       </form>
     </main>
   );
