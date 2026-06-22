@@ -117,8 +117,6 @@ flowchart TD
     Pipeline -->|Build Frontend| FrontendBuild[Next.js Build]
     Pipeline -->|Publish & Deploy| Backend
 
----
-
 ## Authentication Flow
 
 ### Traditional Login
